@@ -1,0 +1,6 @@
+{
+  "model": "large-v3",
+  "compute_type": "float16",
+  "device": "auto",
+  "max_processes": 1
+}
