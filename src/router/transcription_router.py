@@ -4,7 +4,8 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Form, File, HTTPException
 
-from src.job import Job, JobOptions
+from src.job.job import Job
+from src.job.job_options import JobOptions
 from src.vars import jobs, jobs_queue
 
 transcription_router = APIRouter()

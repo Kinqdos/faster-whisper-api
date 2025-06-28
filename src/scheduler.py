@@ -1,7 +1,9 @@
 import time
 from threading import Thread
 
-from src.job import JobState, JobResult, Job
+from src.job.job import Job
+from src.job.job_result import JobResult
+from src.job.job_state import JobState
 from src.vars import jobs_queue, threads, threads_lock, config, whisper, jobs
 
 
