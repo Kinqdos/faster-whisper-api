@@ -1,4 +1,0 @@
-fastapi[standard]
-faster-whisper
-python-multipart
-pydantic
