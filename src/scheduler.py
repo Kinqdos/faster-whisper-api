@@ -1,7 +1,7 @@
 import time
 from threading import Thread
 
-from src.job import JobState, JobResult
+from src.job import JobState, JobResult, Job
 from src.vars import jobs_queue, threads, threads_lock, config, whisper, jobs
 
 
@@ -64,18 +64,26 @@ class Scheduler:
     @staticmethod
     def __do_job(job_id: str) -> None:
         print(f"Starting job {job_id}")
-        job = jobs[job_id]
+        job: Job = jobs[job_id]
         job.state = JobState.RUNNING
         job.result = JobResult()
 
-        segments, info = whisper.transcribe(job.input_path)
-        job.result.info = info
-        job.result.segments = list()
+        try:
+            segments, info = whisper.transcribe(job.input_path, **job.options.model_dump(exclude_none=True))
+            job.result.info = info
+            job.result.segments = list()
 
-        for segment in segments:
-            job.progress = min(segment.end / info.duration, 1)
-            job.result.segments.append(segment)
+            for segment in segments:
+                job.progress = min(segment.end / info.duration, 1)
+                job.result.segments.append(segment)
+        except Exception as e:
+            job.state = JobState.ERROR
+            job.error = repr(e)
+            job.finished_at = int(time.time())
+            print(f"Job {job_id} failed with error: {repr(e)}")
+            return
 
         job.state = JobState.SUCCESS
+        job.progress = 1
         job.finished_at = int(time.time())
-        print(f"Finished job {job.id}")
+        print(f"Job {job.id} finished successfully")

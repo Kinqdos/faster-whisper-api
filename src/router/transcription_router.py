@@ -1,9 +1,10 @@
+import json
 from typing import Annotated, List
 from uuid import uuid4
 
 from fastapi import APIRouter, Form, File, HTTPException
 
-from src.job import Job
+from src.job import Job, JobOptions
 from src.vars import jobs, jobs_queue
 
 transcription_router = APIRouter()
@@ -14,7 +15,9 @@ transcription_router = APIRouter()
 def post_job(file: Annotated[bytes, File()], data: Annotated[str, Form()]) -> Job:
     job_id = str(uuid4())
     job = Job(job_id)
-    # job.options = JobOptions(**json.loads(data))
+    job.options = JobOptions(**json.loads(data))
+
+    # Save input file
     with open(job.input_path, "xb") as fs_file:
         fs_file.write(file)
 
