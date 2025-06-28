@@ -1,15 +1,33 @@
-FROM nvidia/cuda:12.4.1-cudnn8-runtime-ubuntu22.04
+FROM ghcr.io/astral-sh/uv:bookworm-slim AS builder
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y \
-    python3 python3-pip && \
-    rm -rf /var/lib/apt/lists/*
+# Configure the Python directory so it is consistent
+ENV UV_PYTHON_INSTALL_DIR=/python
 
-# Copy your app and install dependencies
+# Only use the managed Python version
+ENV UV_PYTHON_PREFERENCE=only-managed
+
+# Install Python before the project for caching
+RUN uv python install 3.13
+
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev
+COPY . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
 
-COPY . .
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04
 
-CMD ["fastapi", "run", "/app/main.py", "--port", "80"]
+# Copy the Python version
+COPY --from=builder --chown=python:python /python /python
+
+# Copy the application from the builder
+COPY --from=builder --chown=app:app /app /app
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["fastapi", "run", "--port", "80", "/app/src/main.py"]

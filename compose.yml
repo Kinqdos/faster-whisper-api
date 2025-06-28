@@ -1,11 +1,11 @@
 services:
   faster-whisper-api:
     build: .
-    image: faster-whisper-api
+    image: ghcr.io/kinqdos/faster-whisper-api
     container_name: faster-whisper-api
     volumes:
-      - "./data:/data"
-      - "./data/cache/huggingface:/root/.cache/huggingface"
+      - ".:/data"
+      - "./cache/huggingface:/root/.cache/huggingface"
     deploy:
       resources:
         reservations:
