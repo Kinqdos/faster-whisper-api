@@ -53,7 +53,7 @@ class Scheduler:
     def __cleanup() -> None:
         jobs_to_cleanup = [
             job
-            for id, job in jobs
+            for job in jobs.values()
             if job.finished_at is not None and (int(time.time()) - job.finished_at) > Scheduler.cleanup_after
         ]
 
