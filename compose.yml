@@ -4,8 +4,8 @@ services:
     image: ghcr.io/kinqdos/faster-whisper-api
     container_name: faster-whisper-api
     volumes:
-      - ".:/data"
-      - "./cache/huggingface:/root/.cache/huggingface"
+      - "./data:/app/data"
+      - "./data/cache/huggingface:/root/.cache/huggingface"
     deploy:
       resources:
         reservations:
