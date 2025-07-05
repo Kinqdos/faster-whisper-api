@@ -1,0 +1,1 @@
+docker buildx build --push --platform linux/amd64 -t ghcr.io/kinqdos/faster-whisper-api .

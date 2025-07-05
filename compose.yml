@@ -1,6 +1,5 @@
 services:
   faster-whisper-api:
-    build: .
     image: ghcr.io/kinqdos/faster-whisper-api
     container_name: faster-whisper-api
     volumes:
