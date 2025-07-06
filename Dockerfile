@@ -20,6 +20,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04
+WORKDIR /app
 
 # Copy the Python version
 COPY --from=builder --chown=python:python /python /python
@@ -30,4 +31,4 @@ COPY --from=builder --chown=app:app /app /app
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "--port", "80", "/app/src/main.py"]
+CMD ["fastapi", "run", "--port", "80", "./src/main.py"]
