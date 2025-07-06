@@ -3,5 +3,5 @@ import {TranscriptionSegment} from "./TranscriptionSegment";
 
 export type TranscriptionJobResult = {
     info: TranscriptionInfo
-    segements: Array<TranscriptionSegment>
+    segments: Array<TranscriptionSegment>
 }
